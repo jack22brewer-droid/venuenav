@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VenueNav — Find the Right Venue for Your Event</title>
+  <meta name="description" content="Tell us your event, get matched with vetted venues and personal intros in 48 hours.">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="canonical" href="https://jack22brewer-droid.github.io/venuenav/">
+  <meta property="og:title" content="VenueNav — Find the Right Venue">
+  <meta property="og:description" content="Tell us your event. Get matched. Get intros.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jack22brewer-droid.github.io/venuenav/">
+  <meta property="og:image" content="https://jack22brewer-droid.github.io/venuenav/og-image.png">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <noscript><style>.screen{display:block!important}</style><p style="color:#fff;text-align:center;padding:4rem 2rem">VenueNav requires JavaScript to work. Please enable it in your browser.</p></noscript>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0e17;--bg2:#111827;--card:#151c2c;--input:#1a2235;
+      --border:#252e40;--text:#f0ece4;--sub:#9ca3af;--muted:#6b7280;
+      --accent:#d4622a;--accent-h:#e06e35;
+      --accent-soft:rgba(212,98,42,0.10);--accent-border:rgba(212,98,42,0.28);
+      --accent-glow:rgba(212,98,42,0.16);
+      --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);
+      line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;width:100%;z-index:100;padding:1.1rem 2rem;
+      display:flex;justify-content:space-between;align-items:center;
+      background:rgba(10,14,23,0.9);backdrop-filter:blur(24px);
+      border-bottom:1px solid rgba(37,46,64,0.4)}
+    .logo{font-size:1.2rem;font-weight:700;letter-spacing:-0.02em}
+    .logo span{color:var(--accent)}
+
+    /* ── SCREENS ── */
+    .screen{display:none;min-height:100vh;flex-direction:column;
+      justify-content:center;align-items:center;padding:6rem 2rem 4rem;
+      text-align:center;position:relative}
+    .screen.active{display:flex}
+
+    /* ── HERO ── */
+    .hero-screen h1{font-size:clamp(2.8rem,6.5vw,5rem);font-weight:800;
+      letter-spacing:-0.04em;line-height:1.06;max-width:700px;margin-bottom:2rem}
+    .hero-screen .start-btn{
+      padding:1rem 3rem;background:var(--accent);color:#fff;
+      font-size:1.1rem;font-weight:700;border:none;border-radius:10px;
+      cursor:pointer;transition:all 0.25s;letter-spacing:-0.01em}
+    .hero-screen .start-btn:hover{background:var(--accent-h);
+      transform:translateY(-2px);box-shadow:0 10px 36px rgba(212,98,42,0.3)}
+
+    /* ── PROGRESS ── */
+    .progress{position:fixed;top:60px;left:0;width:100%;height:3px;
+      background:var(--border);z-index:99}
+    .progress-fill{height:100%;background:var(--accent);
+      transition:width 0.4s ease;width:0%}
+
+    /* ── QUESTION SCREENS ── */
+    .q-screen{max-width:640px;width:100%}
+    .q-label{font-size:0.7rem;font-weight:600;letter-spacing:0.12em;
+      text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem}
+    .q-screen h2{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700;
+      letter-spacing:-0.025em;margin-bottom:2rem;line-height:1.15}
+
+    /* Pills */
+    .pills{display:flex;flex-wrap:wrap;justify-content:center;gap:0.6rem;
+      margin-bottom:1.5rem}
+    .pill{padding:0.7rem 1.4rem;background:var(--card);
+      border:1px solid var(--border);border-radius:100px;
+      font-size:0.9rem;font-weight:450;color:var(--sub);
+      cursor:pointer;transition:all 0.18s;user-select:none}
+    .pill:hover{border-color:var(--accent);color:var(--text);
+      background:var(--accent-soft)}
+    .pill.selected{background:var(--accent-soft);border-color:var(--accent);
+      color:var(--accent);font-weight:600}
+
+    /* Other text input */
+    .other-input{display:none;width:100%;max-width:400px;margin:0 auto 1.5rem;
+      padding:0.75rem 1rem;background:var(--input);border:1px solid var(--border);
+      border-radius:10px;color:var(--text);font-family:var(--font);
+      font-size:0.95rem;outline:none;text-align:center;transition:border-color 0.2s}
+    .other-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+    .other-input.visible{display:block}
+
+    /* Nav buttons */
+    .q-nav{display:flex;justify-content:center;gap:0.75rem;margin-top:1rem}
+    .q-back{padding:0.65rem 1.5rem;background:transparent;
+      border:1px solid var(--border);color:var(--sub);border-radius:8px;
+      font-size:0.88rem;cursor:pointer;transition:all 0.2s;font-family:var(--font)}
+    .q-back:hover{border-color:var(--sub);color:var(--text)}
+    .q-next{padding:0.65rem 2rem;background:var(--accent);border:none;
+      color:#fff;border-radius:8px;font-size:0.88rem;font-weight:600;
+      cursor:pointer;transition:all 0.2s;font-family:var(--font);
+      opacity:0.3;pointer-events:none}
+    .q-next.ready{opacity:1;pointer-events:auto}
+    .q-next:hover{background:var(--accent-h)}
+
+    /* Multi-select hint */
+    .multi-hint{font-size:0.75rem;color:var(--muted);margin-bottom:1rem}
+
+    /* Textarea for Q7 */
+    .notes-area{width:100%;max-width:480px;margin:0 auto 1.5rem;
+      padding:1rem;background:var(--input);border:1px solid var(--border);
+      border-radius:10px;color:var(--text);font-family:var(--font);
+      font-size:0.92rem;outline:none;resize:vertical;min-height:120px;
+      text-align:left;transition:border-color 0.2s}
+    .notes-area:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+
+    /* ── RESULTS ── */
+    .results-screen{max-width:560px;width:100%;
+      display:flex;flex-direction:column;align-items:center}
+    .results-num{font-size:clamp(3rem,8vw,5rem);font-weight:800;
+      color:var(--accent);letter-spacing:-0.04em;line-height:1;margin-bottom:0.25rem}
+    .results-label{font-size:1.3rem;font-weight:600;margin-bottom:1.5rem;
+      letter-spacing:-0.01em}
+    .results-context{color:var(--sub);font-size:0.9rem;line-height:1.7;
+      margin-bottom:2.5rem;max-width:460px;text-align:center}
+    .email-capture{width:100%;max-width:420px;
+      display:flex;flex-direction:column;align-items:center}
+    .email-capture input{width:100%;padding:0.8rem 1rem;
+      background:var(--input);border:1px solid var(--border);
+      border-radius:10px;color:var(--text);font-family:var(--font);
+      font-size:0.95rem;outline:none;margin-bottom:0.75rem;text-align:center;
+      transition:border-color 0.2s}
+    .email-capture input:focus{border-color:var(--accent);
+      box-shadow:0 0 0 3px var(--accent-glow)}
+    .email-capture button{width:100%;padding:0.85rem;background:var(--accent);
+      border:none;color:#fff;border-radius:10px;font-size:1rem;font-weight:700;
+      cursor:pointer;transition:all 0.2s;font-family:var(--font)}
+    .email-capture button:hover{background:var(--accent-h)}
+    .email-fine{margin-top:0.6rem;font-size:0.72rem;color:var(--muted)}
+
+    /* ── SUCCESS ── */
+    .success-screen{max-width:480px;width:100%}
+    .success-icon{width:56px;height:56px;background:rgba(52,211,153,0.1);
+      border:1px solid rgba(52,211,153,0.25);border-radius:50%;
+      display:inline-flex;align-items:center;justify-content:center;
+      margin-bottom:1.25rem}
+    .success-screen h2{font-size:1.5rem;font-weight:700;margin-bottom:0.5rem}
+    .success-screen p{color:var(--sub);font-size:0.95rem;line-height:1.6}
+
+    /* ── LOADING ── */
+    .loading-screen{max-width:400px;width:100%}
+    .dots span{display:inline-block;width:10px;height:10px;
+      background:var(--accent);border-radius:50%;margin:0 5px;
+      animation:bounce 1.4s infinite ease-in-out both}
+    .dots span:nth-child(1){animation-delay:-0.32s}
+    .dots span:nth-child(2){animation-delay:-0.16s}
+    @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+    .loading-screen p{color:var(--sub);font-size:1rem;margin-top:1.25rem}
+
+    /* ── TRANSITIONS ── */
+    .screen{animation:fadeIn 0.35s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:640px){
+      .screen{padding:5rem 1.25rem 3rem}
+      .pills{gap:0.45rem}
+      .pill{padding:0.6rem 1rem;font-size:0.82rem}
+      nav{padding:1rem 1.25rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Venue<span>Nav</span></div>
+</nav>
+
+<div class="progress" id="progress"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- SCREEN 0: HERO -->
+<div class="screen hero-screen active" data-screen="0">
+  <h1>Find the right venue for your event</h1>
+  <button class="start-btn" onclick="goTo(1)">Find Venues</button>
+</div>
+
+<!-- SCREEN 1: Event type -->
+<div class="screen" data-screen="1">
+  <div class="q-screen">
+    <div class="q-label">Step 1 of 7</div>
+    <h2>What kind of event are you planning?</h2>
+    <div class="pills" data-field="event_type" data-mode="single">
+      <div class="pill" data-value="Festival">Festival</div>
+      <div class="pill" data-value="Concert / Live Music">Concert / Live Music</div>
+      <div class="pill" data-value="Sports Event">Sports Event</div>
+      <div class="pill" data-value="Theater / Performance">Theater / Performance</div>
+      <div class="pill" data-value="Exhibition / Art Show">Exhibition / Art Show</div>
+      <div class="pill" data-value="Brand Activation">Brand Activation</div>
+      <div class="pill" data-value="Corporate / Private Event">Corporate / Private Event</div>
+      <div class="pill" data-value="Conference">Conference</div>
+      <div class="pill" data-value="Other">Other</div>
+    </div>
+    <input type="text" class="other-input" id="otherEventInput" placeholder="Describe your event">
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(0)">Back</button>
+      <button class="q-next" id="nav1" onclick="goTo(2)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: Guests per day -->
+<div class="screen" data-screen="2">
+  <div class="q-screen">
+    <div class="q-label">Step 2 of 7</div>
+    <h2>How many guests per day?</h2>
+    <div class="pills" data-field="guest_count" data-mode="single">
+      <div class="pill" data-value="Under 500">Under 500</div>
+      <div class="pill" data-value="500 – 1,000">500 – 1,000</div>
+      <div class="pill" data-value="1,000 – 5,000">1,000 – 5,000</div>
+      <div class="pill" data-value="5,000+">5,000+</div>
+    </div>
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(1)">Back</button>
+      <button class="q-next" id="nav2" onclick="goTo(3)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: When -->
+<div class="screen" data-screen="3">
+  <div class="q-screen">
+    <div class="q-label">Step 3 of 7</div>
+    <h2>When is your event?</h2>
+    <div class="pills" data-field="timeline" data-mode="single">
+      <div class="pill" data-value="Within 3 months">Within 3 months</div>
+      <div class="pill" data-value="3 – 6 months">3 – 6 months</div>
+      <div class="pill" data-value="6 – 12 months">6 – 12 months</div>
+      <div class="pill" data-value="1 year+">1 year+</div>
+    </div>
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(2)">Back</button>
+      <button class="q-next" id="nav3" onclick="goTo(4)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: Where -->
+<div class="screen" data-screen="4">
+  <div class="q-screen">
+    <div class="q-label">Step 4 of 7</div>
+    <h2>Where?</h2>
+    <div class="pills" data-field="city" data-mode="single">
+      <div class="pill" data-value="NYC">NYC</div>
+      <div class="pill" data-value="LA">LA</div>
+      <div class="pill" data-value="Miami">Miami</div>
+      <div class="pill" data-value="Chicago">Chicago</div>
+      <div class="pill" data-value="Austin">Austin</div>
+      <div class="pill" data-value="Atlanta">Atlanta</div>
+      <div class="pill" data-value="Other">Other</div>
+    </div>
+    <input type="text" class="other-input" id="otherCityInput" placeholder="Enter your city">
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(3)">Back</button>
+      <button class="q-next" id="nav4" onclick="goTo(5)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 5: Venue type (multi-select) -->
+<div class="screen" data-screen="5">
+  <div class="q-screen">
+    <div class="q-label">Step 5 of 7</div>
+    <h2>What type of venue?</h2>
+    <div class="multi-hint">Select all that apply</div>
+    <div class="pills" data-field="venue_type" data-mode="multi">
+      <div class="pill" data-value="Indoor Venue">Indoor Venue</div>
+      <div class="pill" data-value="Outdoor Space">Outdoor Space</div>
+      <div class="pill" data-value="Theater / Auditorium">Theater / Auditorium</div>
+      <div class="pill" data-value="Stadium / Arena">Stadium / Arena</div>
+      <div class="pill" data-value="Festival Grounds">Festival Grounds</div>
+      <div class="pill" data-value="Bar / Lounge">Bar / Lounge</div>
+      <div class="pill" data-value="Restaurant">Restaurant</div>
+      <div class="pill" data-value="Warehouse / Loft">Warehouse / Loft</div>
+      <div class="pill" data-value="Rooftop">Rooftop</div>
+      <div class="pill" data-value="Hotel / Ballroom">Hotel / Ballroom</div>
+      <div class="pill" data-value="Convention Center">Convention Center</div>
+      <div class="pill" data-value="Park / Open Field">Park / Open Field</div>
+      <div class="pill" data-value="Waterfront">Waterfront</div>
+      <div class="pill" data-value="Ranch / Farm">Ranch / Farm</div>
+    </div>
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(4)">Back</button>
+      <button class="q-next" id="nav5" onclick="goTo(6)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 6: Budget -->
+<div class="screen" data-screen="6">
+  <div class="q-screen">
+    <div class="q-label">Step 6 of 7</div>
+    <h2>What's your total venue budget?</h2>
+    <div class="pills" data-field="budget" data-mode="single">
+      <div class="pill" data-value="Under $10K">Under $10K</div>
+      <div class="pill" data-value="$10K – $25K">$10K – $25K</div>
+      <div class="pill" data-value="$25K – $50K">$25K – $50K</div>
+      <div class="pill" data-value="$50K – $100K">$50K – $100K</div>
+      <div class="pill" data-value="$100K+">$100K+</div>
+    </div>
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(5)">Back</button>
+      <button class="q-next" id="nav6" onclick="goTo(7)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 7: Notes -->
+<div class="screen" data-screen="7">
+  <div class="q-screen">
+    <div class="q-label">Step 7 of 7</div>
+    <h2>Anything else?</h2>
+    <textarea class="notes-area" id="notesInput" placeholder="Event name, special requirements, links, or anything that helps us find the right match."></textarea>
+    <div class="q-nav">
+      <button class="q-back" onclick="goTo(6)">Back</button>
+      <button class="q-next ready" onclick="submitForm()">See My Results</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 8: Loading -->
+<div class="screen" data-screen="8">
+  <div class="loading-screen">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <p>Finding venues that match your event...</p>
+  </div>
+</div>
+
+<!-- SCREEN 9: Results -->
+<div class="screen" data-screen="9">
+  <div class="results-screen">
+    <div class="results-num" id="resultCount">12</div>
+    <div class="results-label">venues match your search</div>
+    <p class="results-context" id="resultContext"></p>
+    <div class="email-capture">
+      <input type="email" id="emailInput" placeholder="your@email.com">
+      <button onclick="submitEmail()">Send me the venue list</button>
+      <div class="email-fine">We'll send venue details, pricing ranges, and direct contacts within 48 hours.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 10: Success -->
+<div class="screen" data-screen="10">
+  <div class="success-screen">
+    <div class="success-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <h2>You're in. Check your inbox.</h2>
+    <p>We're reviewing your matches now and will send the full venue list with pricing and direct contacts within 48 hours.</p>
+  </div>
+</div>
+
+<script>
+  // ── STATE ──
+  const data = {};
+  let current = 0;
+  const totalQ = 7;
+
+  // ── NAVIGATION ──
+  function goTo(n) {
+    document.querySelector('.screen.active').classList.remove('active');
+    const target = document.querySelector(`[data-screen="${n}"]`);
+    target.classList.add('active');
+    current = n;
+    // Progress bar (0 = hero, 1-7 = questions)
+    const pct = n === 0 ? 0 : Math.round((n / totalQ) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    // Hide progress on hero and results screens
+    document.getElementById('progress').style.display = (n === 0 || n >= 8) ? 'none' : 'block';
+    window.scrollTo(0, 0);
+  }
+
+  // ── PILL LOGIC ──
+  document.querySelectorAll('.pills').forEach(container => {
+    const field = container.dataset.field;
+    const mode = container.dataset.mode;
+    container.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const val = pill.dataset.value;
+
+        if (mode === 'multi') {
+          pill.classList.toggle('selected');
+          const vals = [...container.querySelectorAll('.pill.selected')].map(p => p.dataset.value);
+          data[field] = vals.join(', ');
+        } else {
+          container.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+          pill.classList.add('selected');
+          data[field] = val;
+        }
+
+        // Handle "Other" pill → show text input
+        if (val === 'Other' && mode === 'single') {
+          const inputMap = { event_type: 'otherEventInput', city: 'otherCityInput' };
+          const inputEl = document.getElementById(inputMap[field]);
+          if (inputEl) {
+            inputEl.classList.add('visible');
+            inputEl.focus();
+            inputEl.oninput = () => { data[field] = 'Other: ' + inputEl.value; };
+          }
+        } else if (mode === 'single') {
+          const inputMap = { event_type: 'otherEventInput', city: 'otherCityInput' };
+          const inputEl = document.getElementById(inputMap[field]);
+          if (inputEl) inputEl.classList.remove('visible');
+        }
+
+        // Enable continue button
+        updateNav(field);
+
+        // Auto-advance for single-select (except if Other)
+        if (mode === 'single' && val !== 'Other') {
+          setTimeout(() => {
+            const nextScreen = current + 1;
+            if (nextScreen <= totalQ) goTo(nextScreen);
+          }, 250);
+        }
+      });
+    });
+  });
+
+  function updateNav(field) {
+    const screenMap = { event_type:1, guest_count:2, timeline:3, city:4, venue_type:5, budget:6 };
+    const screen = screenMap[field];
+    if (!screen) return;
+    const btn = document.getElementById('nav' + screen);
+    if (!btn) return;
+    const hasValue = data[field] && data[field].length > 0;
+    btn.classList.toggle('ready', hasValue);
+  }
+
+  // ── SUBMIT FORM ──
+  function submitForm() {
+    data.notes = document.getElementById('notesInput').value;
+    data.submitted_at = new Date().toISOString();
+    goTo(8); // loading
+
+    // Send partial data (no email yet)
+    sendFormData({ ...data, status: 'New', email: '' });
+
+    // Calculate venue count
+    const count = getVenueCount(data.city, data.guest_count);
+    document.getElementById('resultCount').textContent = count;
+
+    // Build context
+    const ctx = buildContext(data);
+    document.getElementById('resultContext').textContent = ctx;
+
+    setTimeout(() => goTo(9), 2000);
+  }
+
+  function getVenueCount(city, size) {
+    const base = { 'NYC':18, 'LA':15, 'Miami':12, 'Chicago':11, 'Austin':9, 'Atlanta':10 };
+    let n = base[city] || 8;
+    if (size === '5,000+') n = Math.max(3, Math.floor(n * 0.4));
+    else if (size === '1,000 – 5,000') n = Math.max(4, Math.floor(n * 0.6));
+    else if (size === '500 – 1,000') n = Math.floor(n * 0.8);
+    // Add some variance
+    n += Math.floor(Math.random() * 3) - 1;
+    return Math.max(3, n);
+  }
+
+  function buildContext(d) {
+    const type = (d.event_type || 'event').replace('Other: ','');
+    const city = (d.city || '').replace('Other: ','');
+    const size = d.guest_count || '';
+    const venue = d.venue_type || '';
+    const budget = d.budget || '';
+    const timeline = d.timeline || '';
+
+    let lines = [];
+    lines.push(`For a ${type.toLowerCase()} with ${size} guests/day in ${city || 'your area'}.`);
+
+    if (venue) lines.push(`Looking at: ${venue}.`);
+
+    // Pricing insight based on budget + size
+    if (budget && size) {
+      if (size === '5,000+' || size === '1,000 – 5,000') {
+        lines.push('Venues in this range typically require 90+ days advance booking and often have exclusivity on F&B and production.');
+      } else {
+        lines.push('Most venues in this range respond within 48 hours and can hold dates with a deposit.');
+      }
+    }
+
+    if (timeline === 'Within 3 months') {
+      lines.push('With your timeline, we\'ll prioritize venues with confirmed availability.');
+    }
+
+    return lines.join(' ');
+  }
+
+  // ── EMAIL SUBMIT ──
+  function submitEmail() {
+    const email = document.getElementById('emailInput').value;
+    if (!email || !email.includes('@')) {
+      document.getElementById('emailInput').style.borderColor = '#ef4444';
+      return;
+    }
+    data.email = email;
+    sendFormData({ ...data, status: 'New' });
+    goTo(10);
+  }
+
+  // ── FORM ENDPOINT ──
+  const FORM_URL = 'https://script.google.com/macros/s/AKfycbzI3rL-Y0djgw2JyWWxjd9znMlZnTLiWgap0RpFYQ_ZlbPy2H5GPs9-Y3CX2GE1IDex/exec';
+  function sendFormData(payload) {
+    fetch(FORM_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      mode: 'no-cors'
+    }).catch(e => console.log('Submit error:', e));
+  }
+
+  // ── KEYBOARD NAV ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && current >= 1 && current <= 7) {
+      const btn = document.getElementById('nav' + current);
+      if (btn && btn.classList.contains('ready')) btn.click();
+      else if (current === 7) submitForm();
+    }
+  });
+
+  // Init: hide progress
+  document.getElementById('progress').style.display = 'none';
+</script>
+</body>
+</html>
