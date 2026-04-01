@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LBYPRNHLM"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-0LBYPRNHLM');</script>
   <title>VenueNav — Find the Right Venue for Your Event</title>
   <meta name="description" content="Tell us your event, get matched with vetted venues and personal intros in 48 hours.">
   <meta name="theme-color" content="#0a0e17">
-  <link rel="canonical" href="https://jack22brewer-droid.github.io/venuenav/">
+  <link rel="canonical" href="https://venuenav.com/">
   <meta property="og:title" content="VenueNav — Find the Right Venue">
   <meta property="og:description" content="Tell us your event. Get matched. Get intros.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jack22brewer-droid.github.io/venuenav/">
-  <meta property="og:image" content="https://jack22brewer-droid.github.io/venuenav/og-image.png">
+  <meta property="og:url" content="https://venuenav.com/">
+  <meta property="og:image" content="https://venuenav.com/og-image.png">
   <meta name="robots" content="index, follow">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -365,12 +368,24 @@
   let current = 0;
   const totalQ = 7;
 
+  // ── GA4 FUNNEL EVENTS ──
+  function trackEvent(name, params) {
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  }
+
   // ── NAVIGATION ──
   function goTo(n) {
     document.querySelector('.screen.active').classList.remove('active');
     const target = document.querySelector(`[data-screen="${n}"]`);
     target.classList.add('active');
     current = n;
+
+    // Track funnel steps in GA4
+    if (n === 1) trackEvent('funnel_start', { step: 1 });
+    if (n >= 1 && n <= 7) trackEvent('funnel_step', { step: n, question: n });
+    if (n === 8) trackEvent('funnel_submit', { step: 'loading' });
+    if (n === 9) trackEvent('funnel_results', { step: 'results' });
+
     // Progress bar (0 = hero, 1-7 = questions)
     const pct = n === 0 ? 0 : Math.round((n / totalQ) * 100);
     document.getElementById('progressFill').style.width = pct + '%';
@@ -505,6 +520,8 @@
     }
     data.email = email;
     sendFormData({ ...data, status: 'New' });
+    trackEvent('lead_captured', { method: 'email', city: data.city, event_type: data.event_type });
+    trackEvent('conversion', { send_to: 'G-0LBYPRNHLM' });
     goTo(10);
   }
 
