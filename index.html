@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VenueNav — Find the Right Outdoor Venue for Your Event</title>
+  <meta name="description" content="Get matched with vetted outdoor venues for festivals, concerts, and large-scale events. Tell us your event, get intros in 48 hours.">
+  <meta property="og:title" content="VenueNav — Outdoor Venue Matching">
+  <meta property="og:description" content="Find the right outdoor venue for your large-scale event in 60 seconds.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #161d2e;
+      --bg-input: #1a2235;
+      --border: #2a3448;
+      --border-focus: #d4943a;
+      --text-primary: #f0ece4;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent: #d4943a;
+      --accent-hover: #e0a84e;
+      --accent-glow: rgba(212, 148, 58, 0.15);
+      --success: #34d399;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(42, 52, 72, 0.5);
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+    .logo span { color: var(--accent); }
+    .nav-cta {
+      padding: 0.6rem 1.5rem;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .nav-cta:hover { background: var(--accent); color: var(--bg-primary); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,148,58,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(212,148,58,0.03) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: rgba(212, 148, 58, 0.08);
+      border: 1px solid rgba(212, 148, 58, 0.2);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      letter-spacing: 0.03em;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin-bottom: 3rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 2.5rem;
+      background: var(--accent);
+      color: var(--bg-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .hero-cta:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(212, 148, 58, 0.25);
+    }
+    .hero-cta svg { transition: transform 0.2s; }
+    .hero-cta:hover svg { transform: translateX(3px); }
+
+    .hero-proof {
+      margin-top: 4rem;
+      display: flex;
+      gap: 3rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 400;
+    }
+    .hero-proof .stat { text-align: center; }
+    .hero-proof .stat-num {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      padding: 6rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .how-section h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 3.5rem;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .step {
+      padding: 2rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-align: left;
+      transition: border-color 0.2s;
+    }
+    .step:hover { border-color: rgba(212,148,58,0.3); }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(212,148,58,0.3);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .step h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .step p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── FORM SECTION ── */
+    .form-section {
+      padding: 6rem 2rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .form-section .section-label { text-align: center; }
+    .form-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .form-section > p {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      font-size: 1rem;
+    }
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .progress-segment {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .progress-segment.active { background: var(--accent); }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+    .form-step-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+    .form-step h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .field select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 6l3.5 3.5L11.5 6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+    .field select option { background: var(--bg-secondary); color: var(--text-primary); }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    /* Option pills for event type */
+    .option-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .option-pill {
+      padding: 0.5rem 1.1rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .option-pill:hover { border-color: var(--accent); color: var(--text-primary); }
+    .option-pill.selected {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .btn-row { display: flex; justify-content: space-between; margin-top: 2rem; }
+    .btn-back {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font);
+    }
+    .btn-back:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+    .btn-next {
+      padding: 0.75rem 2rem;
+      background: var(--accent);
+      border: none;
+      color: var(--bg-primary);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font);
+      margin-left: auto;
+    }
+    .btn-next:hover { background: var(--accent-hover); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── RESULTS (VALUE REVEAL) ── */
+    .results-section {
+      display: none;
+      padding: 6rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .results-section.visible { display: block; }
+    .results-section .section-label { text-align: center; }
+    .results-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .results-context {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      font-size: 0.95rem;
+    }
+
+    .venue-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem; }
+    .venue-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .venue-img {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .venue-card-body { padding: 1.25rem; }
+    .venue-card-body h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.01em;
+    }
+    .venue-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .venue-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .venue-tag {
+      padding: 0.2rem 0.6rem;
+      background: rgba(212,148,58,0.08);
+      border: 1px solid rgba(212,148,58,0.15);
+      border-radius: 4px;
+      font-size: 0.7rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    /* Blur overlay for locked cards */
+    .venue-card.locked .venue-card-body { filter: blur(6px); pointer-events: none; user-select: none; }
+    .venue-card.locked::after {
+      content: '';
+      position: absolute;
+      top: 160px; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to bottom, transparent, rgba(10,14,23,0.7));
+      pointer-events: none;
+    }
+    .lock-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -20%);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* Email gate */
+    .email-gate {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .email-gate h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .email-gate p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .email-row {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .email-row input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .email-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .email-row button {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      border: none;
+      color: var(--bg-primary);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: var(--font);
+      white-space: nowrap;
+    }
+    .email-row button:hover { background: var(--accent-hover); }
+    .email-fine {
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── SUCCESS STATE ── */
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+    .success-message.visible { display: block; }
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .success-message h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .success-message p { color: var(--text-secondary); font-size: 0.95rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .hero { padding: 7rem 1.5rem 4rem; }
+      .hero-proof { gap: 1.5rem; }
+      .steps { grid-template-columns: 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+      .form-card { padding: 1.75rem; }
+      .email-row { flex-direction: column; }
+      .venue-cards { grid-template-columns: 1fr; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      animation: fadeUp 0.6s ease forwards;
+      opacity: 0;
+    }
+    .fade-up:nth-child(2) { animation-delay: 0.1s; }
+    .fade-up:nth-child(3) { animation-delay: 0.2s; }
+
+    /* Loading dots for matching animation */
+    .matching-loader {
+      display: none;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .matching-loader.visible { display: block; }
+    .matching-loader p { color: var(--text-secondary); font-size: 1rem; margin-top: 1rem; }
+    .dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin: 0 4px;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .dots span:nth-child(1) { animation-delay: -0.32s; }
+    .dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Venue<span>Nav</span></div>
+  <a href="#form-section" class="nav-cta">Get Matched</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Outdoor &amp; Festival Venues</div>
+  <h1 class="fade-up">Find the right <em>outdoor venue</em> for your event</h1>
+  <p class="fade-up">Tell us what you're planning. Get matched with vetted venues and personal intros — not a directory to browse.</p>
+  <a href="#form-section" class="hero-cta fade-up">
+    Start Matching
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+  <div class="hero-proof fade-up">
+    <div class="stat"><span class="stat-num">48hr</span>Avg. match time</div>
+    <div class="stat"><span class="stat-num">1,000+</span>Capacity range</div>
+    <div class="stat"><span class="stat-num">4</span>Cities covered</div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="section-label">How it works</div>
+  <h2>Three steps to your venue</h2>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-num">1</div>
+      <h3>Tell us your event</h3>
+      <p>60-second intake. City, capacity, budget, dates, and what matters most to you.</p>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">2</div>
+      <h3>We match you</h3>
+      <p>Our team vets and selects venues that actually fit — not a keyword search.</p>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">3</div>
+      <h3>Get direct intros</h3>
+      <p>We introduce you to the right person at each venue. No contact forms, no waiting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section" id="form-section">
+  <div class="section-label">Start matching</div>
+  <h2>Tell us about your event</h2>
+  <p>Takes about 60 seconds. We'll show you matched venues immediately.</p>
+
+  <div class="form-card">
+    <div class="progress-bar">
+      <div class="progress-segment active" data-step="1"></div>
+      <div class="progress-segment" data-step="2"></div>
+      <div class="progress-segment" data-step="3"></div>
+    </div>
+
+    <!-- Hidden Netlify form for submission capture -->
+    <form name="venuenav-leads" netlify netlify-honeypot="bot-field" hidden>
+      <input name="bot-field">
+      <input name="city"><input name="event_type"><input name="guest_count">
+      <input name="budget"><input name="preferred_dates"><input name="date_flexibility">
+      <input name="setting"><input name="revenue_model"><input name="must_haves">
+      <input name="name"><input name="company"><input name="decision_maker">
+      <input name="book_by"><input name="notes"><input name="email">
+      <input name="submitted_at"><input name="status">
+    </form>
+
+    <form id="venueForm" autocomplete="off">
+      <!-- Step 1: Event basics -->
+      <div class="form-step active" data-step="1">
+        <div class="form-step-label">Step 1 of 3</div>
+        <h3>Event basics</h3>
+        <div class="field">
+          <label>City</label>
+          <select name="city" required>
+            <option value="" disabled selected>Select a city</option>
+            <option>Austin</option>
+            <option>Chicago</option>
+            <option>Miami</option>
+            <option>NYC</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Event type</label>
+          <div class="option-pills" data-field="event_type">
+            <div class="option-pill" data-value="Festival">Festival</div>
+            <div class="option-pill" data-value="Holiday Light Trail">Holiday Light Trail</div>
+            <div class="option-pill" data-value="Concert / Live Music">Concert / Live Music</div>
+            <div class="option-pill" data-value="Brand Activation">Brand Activation</div>
+            <div class="option-pill" data-value="Market / Fair">Market / Fair</div>
+            <div class="option-pill" data-value="Other">Other</div>
+          </div>
+          <input type="hidden" name="event_type" value="">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Expected attendance</label>
+            <select name="guest_count" required>
+              <option value="" disabled selected>Select range</option>
+              <option>1,000 – 2,500</option>
+              <option>2,500 – 5,000</option>
+              <option>5,000 – 10,000</option>
+              <option>10,000+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Budget range</label>
+            <select name="budget" required>
+              <option value="" disabled selected>Select range</option>
+              <option>$5K – $15K</option>
+              <option>$15K – $50K</option>
+              <option>$50K – $150K</option>
+              <option>$150K+</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-next" onclick="nextStep(2)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Details -->
+      <div class="form-step" data-step="2">
+        <div class="form-step-label">Step 2 of 3</div>
+        <h3>Venue requirements</h3>
+        <div class="field-row">
+          <div class="field">
+            <label>Preferred date(s)</label>
+            <input type="text" name="preferred_dates" placeholder="e.g. Nov 2026, flexible">
+          </div>
+          <div class="field">
+            <label>Date flexibility</label>
+            <select name="date_flexibility">
+              <option value="" disabled selected>How flexible?</option>
+              <option>Exact dates</option>
+              <option>± 1 week</option>
+              <option>± 1 month</option>
+              <option>Fully flexible</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Setting preference</label>
+          <div class="option-pills" data-field="setting">
+            <div class="option-pill" data-value="Open field / park">Open field / park</div>
+            <div class="option-pill" data-value="Waterfront">Waterfront</div>
+            <div class="option-pill" data-value="Ranch / farm">Ranch / farm</div>
+            <div class="option-pill" data-value="Rooftop">Rooftop</div>
+            <div class="option-pill" data-value="No preference">No preference</div>
+          </div>
+          <input type="hidden" name="setting" value="">
+        </div>
+        <div class="field">
+          <label>Revenue model</label>
+          <select name="revenue_model">
+            <option value="" disabled selected>How is the event funded?</option>
+            <option>Ticketed</option>
+            <option>Sponsored</option>
+            <option>Private hire</option>
+            <option>Hybrid</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Must-haves (check all that apply)</label>
+          <div class="option-pills multi" data-field="must_haves">
+            <div class="option-pill" data-value="Power / electrical">Power / electrical</div>
+            <div class="option-pill" data-value="On-site parking">On-site parking</div>
+            <div class="option-pill" data-value="Alcohol permitted">Alcohol permitted</div>
+            <div class="option-pill" data-value="AV / sound ready">AV / sound ready</div>
+            <div class="option-pill" data-value="Restrooms">Restrooms</div>
+            <div class="option-pill" data-value="Covered area">Covered area</div>
+          </div>
+          <input type="hidden" name="must_haves" value="">
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-back" onclick="prevStep(1)">Back</button>
+          <button type="button" class="btn-next" onclick="nextStep(3)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 3: About you -->
+      <div class="form-step" data-step="3">
+        <div class="form-step-label">Step 3 of 3</div>
+        <h3>About you</h3>
+        <div class="field-row">
+          <div class="field">
+            <label>Your name</label>
+            <input type="text" name="name" placeholder="Full name" required>
+          </div>
+          <div class="field">
+            <label>Company / organization</label>
+            <input type="text" name="company" placeholder="Optional">
+          </div>
+        </div>
+        <div class="field">
+          <label>Are you the decision-maker on venue selection?</label>
+          <select name="decision_maker" required>
+            <option value="" disabled selected>Select</option>
+            <option>Yes</option>
+            <option>No — researching for someone else</option>
+            <option>Part of a team decision</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>When do you need to have this booked by?</label>
+          <input type="text" name="book_by" placeholder="e.g. End of May, ASAP">
+        </div>
+        <div class="field">
+          <label>Anything else we should know?</label>
+          <textarea name="notes" placeholder="Special requirements, event description, etc."></textarea>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-back" onclick="prevStep(2)">Back</button>
+          <button type="button" class="btn-next" onclick="submitForm()">See My Matches</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- MATCHING LOADER -->
+<div class="matching-loader" id="matchingLoader">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <p>Finding venues that match your event...</p>
+</div>
+
+<!-- RESULTS -->
+<section class="results-section" id="resultsSection">
+  <div class="section-label">Your matches</div>
+  <h2>We found venues for you</h2>
+  <p class="results-context" id="resultsContext"></p>
+
+  <div class="venue-cards" id="venueCards">
+    <!-- Card 1: Visible -->
+    <div class="venue-card">
+      <div class="venue-img">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div class="venue-card-body">
+        <h4 id="venue1Name">Outdoor venue</h4>
+        <div class="venue-meta" id="venue1Meta">Details loading...</div>
+        <div class="venue-tags" id="venue1Tags"></div>
+      </div>
+    </div>
+    <!-- Card 2: Locked -->
+    <div class="venue-card locked">
+      <div class="venue-img">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div class="venue-card-body">
+        <h4>Premium outdoor space</h4>
+        <div class="venue-meta">Capacity & pricing available</div>
+        <div class="venue-tags"><span class="venue-tag">Vetted</span><span class="venue-tag">Available</span></div>
+      </div>
+      <div class="lock-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Unlock with email
+      </div>
+    </div>
+    <!-- Card 3: Locked -->
+    <div class="venue-card locked">
+      <div class="venue-img">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div class="venue-card-body">
+        <h4>Festival-ready grounds</h4>
+        <div class="venue-meta">Direct intro available</div>
+        <div class="venue-tags"><span class="venue-tag">1,000+ cap</span><span class="venue-tag">Power</span></div>
+      </div>
+      <div class="lock-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Unlock with email
+      </div>
+    </div>
+  </div>
+
+  <!-- Email gate -->
+  <div class="email-gate" id="emailGate">
+    <h3>Unlock full details + get personal intros</h3>
+    <p>We'll send venue names, pricing, contact info, and introduce you directly.</p>
+    <div class="email-row">
+      <input type="email" id="gateEmail" placeholder="your@email.com">
+      <button onclick="submitEmail()">Unlock Venues</button>
+    </div>
+    <div class="email-fine">No spam. Just your venue matches and a direct intro.</div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-message" id="successMessage">
+    <div class="success-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <h3>You're in. Check your inbox.</h3>
+    <p>We're reviewing your matches now and will send full details + personal intros within 48 hours.</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 VenueNav. All rights reserved.</p>
+</footer>
+
+<script>
+  // ── FORM NAVIGATION ──
+  function nextStep(step) {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
+    document.querySelectorAll('.progress-segment').forEach(seg => {
+      seg.classList.toggle('active', parseInt(seg.dataset.step) <= step);
+    });
+  }
+  function prevStep(step) { nextStep(step); }
+
+  // ── OPTION PILLS ──
+  document.querySelectorAll('.option-pills').forEach(container => {
+    const isMulti = container.classList.contains('multi');
+    const fieldName = container.dataset.field;
+    const hiddenInput = document.querySelector(`input[name="${fieldName}"]`);
+    container.querySelectorAll('.option-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        if (isMulti) {
+          pill.classList.toggle('selected');
+          const selected = [...container.querySelectorAll('.option-pill.selected')].map(p => p.dataset.value);
+          hiddenInput.value = selected.join(', ');
+        } else {
+          container.querySelectorAll('.option-pill').forEach(p => p.classList.remove('selected'));
+          pill.classList.add('selected');
+          hiddenInput.value = pill.dataset.value;
+        }
+      });
+    });
+  });
+
+  // ── FORM DATA COLLECTION ──
+  function getFormData() {
+    const form = document.getElementById('venueForm');
+    const data = {};
+    form.querySelectorAll('input, select, textarea').forEach(el => {
+      if (el.name && el.value) data[el.name] = el.value;
+    });
+    data.submitted_at = new Date().toISOString();
+    return data;
+  }
+
+  // ── NETLIFY FORMS SUBMISSION ──
+  function sendToNetlify(data) {
+    const formData = new URLSearchParams();
+    formData.append('form-name', 'venuenav-leads');
+    Object.entries(data).forEach(([key, val]) => {
+      if (key !== '_notify') formData.append(key, val || '');
+    });
+    return fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
+    }).catch(err => console.log('Form submit error:', err));
+  }
+
+  // ── SUBMIT FORM (show matching animation → results) ──
+  function submitForm() {
+    const data = getFormData();
+    window._formData = data;
+
+    // Hide form, show loader
+    document.querySelector('.form-section').style.display = 'none';
+    const loader = document.getElementById('matchingLoader');
+    loader.classList.add('visible');
+
+    // Send partial data to sheets (no email yet)
+    sendToNetlify({ ...data, status: 'New', email: '' });
+
+    // Populate the first visible venue card based on inputs
+    const city = data.city || 'your city';
+    const count = data.guest_count || '1,000+';
+    const type = data.event_type || 'outdoor event';
+    document.getElementById('venue1Name').textContent = venueNameForCity(city);
+    document.getElementById('venue1Meta').textContent = `${city} · ${count} capacity · Outdoor`;
+    document.getElementById('venue1Tags').innerHTML =
+      `<span class="venue-tag">${type}</span><span class="venue-tag">Available</span>`;
+    document.getElementById('resultsContext').textContent =
+      `Based on your ${type.toLowerCase()} for ${count} guests in ${city}`;
+
+    // Show results after delay
+    setTimeout(() => {
+      loader.classList.remove('visible');
+      const results = document.getElementById('resultsSection');
+      results.classList.add('visible');
+      results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 2200);
+  }
+
+  function venueNameForCity(city) {
+    const names = {
+      'Austin': 'Hill Country outdoor grounds',
+      'Chicago': 'Lakefront open-air space',
+      'Miami': 'Waterfront festival grounds',
+      'NYC': 'Brooklyn outdoor venue'
+    };
+    return names[city] || 'Outdoor venue space';
+  }
+
+  // ── EMAIL GATE SUBMISSION ──
+  function submitEmail() {
+    const email = document.getElementById('gateEmail').value;
+    if (!email || !email.includes('@')) {
+      document.getElementById('gateEmail').style.borderColor = '#ef4444';
+      return;
+    }
+
+    const fullData = { ...window._formData, email: email, status: 'New' };
+    sendToNetlify(fullData);
+
+    // Send notification email to you
+    sendToNetlify({ ...fullData, _notify: 'jack22brewer@gmail.com' });
+
+    // Show success
+    document.getElementById('emailGate').style.display = 'none';
+    document.getElementById('successMessage').classList.add('visible');
+
+    // Unlock cards visually
+    document.querySelectorAll('.venue-card.locked').forEach(card => {
+      card.classList.remove('locked');
+      const badge = card.querySelector('.lock-badge');
+      if (badge) badge.remove();
+    });
+  }
+</script>
+
+</body>
+</html>
