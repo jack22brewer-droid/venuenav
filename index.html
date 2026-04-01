@@ -663,17 +663,6 @@
       <div class="progress-segment" data-step="3"></div>
     </div>
 
-    <!-- Hidden Netlify form for submission capture -->
-    <form name="venuenav-leads" netlify netlify-honeypot="bot-field" hidden>
-      <input name="bot-field">
-      <input name="city"><input name="event_type"><input name="guest_count">
-      <input name="budget"><input name="preferred_dates"><input name="date_flexibility">
-      <input name="setting"><input name="revenue_model"><input name="must_haves">
-      <input name="name"><input name="company"><input name="decision_maker">
-      <input name="book_by"><input name="notes"><input name="email">
-      <input name="submitted_at"><input name="status">
-    </form>
-
     <form id="venueForm" autocomplete="off">
       <!-- Step 1: Event basics -->
       <div class="form-step active" data-step="1">
@@ -951,17 +940,15 @@
     return data;
   }
 
-  // ── NETLIFY FORMS SUBMISSION ──
-  function sendToNetlify(data) {
-    const formData = new URLSearchParams();
-    formData.append('form-name', 'venuenav-leads');
-    Object.entries(data).forEach(([key, val]) => {
-      if (key !== '_notify') formData.append(key, val || '');
-    });
-    return fetch('/', {
+  // ── FORM SUBMISSION (Formspree) ──
+  // To activate: create free account at formspree.io, get your form endpoint, replace below
+  const FORM_URL = 'https://formspree.io/f/jack22brewer@gmail.com';
+
+  function sendFormData(data) {
+    return fetch(FORM_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString()
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
     }).catch(err => console.log('Form submit error:', err));
   }
 
@@ -976,7 +963,7 @@
     loader.classList.add('visible');
 
     // Send partial data to sheets (no email yet)
-    sendToNetlify({ ...data, status: 'New', email: '' });
+    sendFormData({ ...data, status: 'New', email: '' });
 
     // Populate the first visible venue card based on inputs
     const city = data.city || 'your city';
@@ -1017,10 +1004,10 @@
     }
 
     const fullData = { ...window._formData, email: email, status: 'New' };
-    sendToNetlify(fullData);
+    sendFormData(fullData);
 
     // Send notification email to you
-    sendToNetlify({ ...fullData, _notify: 'jack22brewer@gmail.com' });
+    sendFormData({ ...fullData, _notify: 'jack22brewer@gmail.com' });
 
     // Show success
     document.getElementById('emailGate').style.display = 'none';
